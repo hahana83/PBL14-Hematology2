@@ -193,6 +193,7 @@ button{font-family:var(--th);cursor:pointer}
     <button class="btn" id="bUndo">◀ ย้อน</button>
     <button class="btn pri" id="bNext">ถัดไป ▶</button>
     <button class="btn" id="bSum">สรุป</button>
+    <button class="btn" id="bRef">อ้างอิง</button>
     <button class="btn" id="bReset">เริ่มใหม่</button>
   </div>
 
@@ -243,53 +244,67 @@ const ZONES={
 
 const DX=[
  {id:'itp',name:'ITP',full:'Immune thrombocytopenia',
-  note:'Autoantibody (ส่วนใหญ่ต่อ GPIIb/IIIa) จับเกล็ดเลือด → ถูก macrophage ในม้ามทำลาย ร่วมกับการสร้างเกล็ดเลือดที่บกพร่อง · คนไข้มักสบายดี มีแค่ mucocutaneous bleeding · วินิจฉัยโดยการตัดสาเหตุอื่นออก (diagnosis of exclusion)',
-  next:'CBC + blood smear: isolated thrombocytopenia (platelet < 100 × 10⁹/L) โดยค่าอื่นปกติ แล้วหา secondary cause (เช่น HIV, HCV, HBV, ANA)'},
+  note:'Acquired bleeding disorder: platelet < 100,000/mm³ จาก immune-mediated platelet destruction ร่วมกับการสร้างเกล็ดเลือดที่บกพร่อง · Autoantibody (ส่วนใหญ่ต่อ GPIIb/IIIa) จับเกล็ดเลือด → ถูก macrophage ทำลาย · เป็น diagnosis of exclusion: acquired bleeding, ไม่มีประวัติครอบครัว, ไม่มีตับม้ามโต, ไม่มีต่อมน้ำเหลืองโต, isolated thrombocytopenia · ผู้ใหญ่: พบในเพศหญิงมากกว่า และเริ่มแบบค่อยเป็นค่อยไป',
+  next:'CBC + blood smear: isolated thrombocytopenia ไม่มี anemia, leukopenia หรือ blast แล้วหา secondary cause: anti-HIV, HBsAg, anti-HCV (ในเคสนี้ส่ง ANA เพิ่ม)',
+  ref:'Lecture 9; Lecture 8 (GPIIb/IIIa); Rodeghiero 2009; Provan 2019'},
  {id:'pltdys',name:'Platelet dysfunction',full:'Acquired platelet dysfunction',
-  note:'Platelet count ปกติ แต่เกล็ดเลือดทำงานผิดปกติ · สาเหตุ acquired ที่พบบ่อย: ยา (aspirin, NSAIDs, clopidogrel), uremia, liver disease, myeloproliferative neoplasm',
-  next:'CBC: ถ้า platelet count ปกติ → platelet function test (เช่น PFA, platelet aggregation)'},
+  note:'Qualitative platelet defect: platelet count ปกติ แต่เกล็ดเลือดทำงานผิดปกติ · สาเหตุ acquired: APDE, ยา, chronic kidney disease (uremia) และ chronic liver disease (mild platelet dysfunction)',
+  next:'CBC: ถ้า platelet count ปกติ → platelet function test (เช่น PFA, platelet aggregation)',
+  ref:'Lecture 9 (ตัวอย่างยา: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง)'},
  {id:'apde',name:'APDE',full:'Acquired platelet dysfunction with eosinophilia',
-  note:'มีรายงานในไทยและเอเชียตะวันออกเฉียงใต้ ส่วนใหญ่ในเด็ก · จ้ำเลือดเกิดขึ้นเอง platelet count ปกติแต่การทำงานผิดปกติ ร่วมกับ eosinophilia',
-  next:'CBC (platelet count, eosinophil) + stool exam หาพยาธิ'},
+  note:'Ecchymosis (พบบ่อย) และ mucocutaneous bleeding · Platelet count ปกติ แต่การทำงานผิดปกติ · เกล็ดเลือดรูปร่างแปลก (bizarre) และ hypogranular ร่วมกับ eosinophilia · รายงานส่วนใหญ่ในเด็กไทยและเอเชียตะวันออกเฉียงใต้ แต่พบในผู้ใหญ่ได้ · ในการศึกษา 62 ราย ตรวจพบพยาธิในลำไส้ 58%',
+  next:'CBC + blood smear (platelet count, รูปร่างเกล็ดเลือด, eosinophil) + stool exam หาพยาธิ',
+  ref:'Lecture 9; Suvatte 1979; Chotsampancharoen 2018'},
  {id:'vwd',name:'VWD',full:'von Willebrand disease',
-  note:'โรคเลือดออกง่ายทางพันธุกรรมที่พบบ่อยที่สุด · VWF ช่วยให้ platelet เกาะผนังหลอดเลือด และเป็นตัวพา factor VIII · mucocutaneous bleeding และ menorrhagia เข้าได้ แต่มักมีอาการตั้งแต่เด็กหรือมีประวัติครอบครัว',
-  next:'ถ้า platelet count ปกติแต่ยังเลือดออก → VWF antigen, VWF activity, factor VIII'},
+  note:'โรคเลือดออกง่ายทางพันธุกรรมที่พบบ่อยที่สุด (prevalence 0.1–1.0%) · Mild mucocutaneous bleeding · ถ่ายทอดแบบ autosomal dominant ยกเว้น type 2N และ 3 · VWF ช่วยให้ platelet เกาะผนังหลอดเลือด (ผ่าน GPIb-IX-V) และเป็นตัวพา factor VIII · Inherited bleeding มักเริ่มตั้งแต่เด็ก เป็นซ้ำเรื้อรัง และมีประวัติครอบครัว',
+  next:'ถ้า platelet count ปกติแต่ยังเลือดออก → VWF antigen, VWF activity, factor VIII',
+  ref:'Lecture 8, Lecture 9'},
  {id:'hemo',name:'Hemophilia',full:'Hemophilia A / B (factor VIII / IX deficiency)',
-  note:'X-linked recessive → ส่วนใหญ่เป็นเพศชาย · เลือดออกแบบ secondary hemostasis เช่น เลือดออกในข้อ (hemarthrosis) และกล้ามเนื้อ',
-  next:'APTT ยาว PT ปกติ → factor VIII / IX assay'},
+  note:'X-linked recessive → ส่วนใหญ่เป็นเพศชาย · ประมาณ 30% เป็น de novo (จึงไม่มีประวัติครอบครัวได้) · เลือดออกแบบ secondary hemostasis: กล้ามเนื้อ ข้อ และ CNS',
+  next:'APTT ยาว PT ปกติ → factor VIII / IX assay',
+  ref:'Lecture 9'},
  {id:'vitk',name:'Vit K deficiency',full:'Vitamin K deficiency',
-  note:'Factor II, VII, IX, X ทำงานไม่ได้ → เป็นปัญหา secondary hemostasis, PT ยาวก่อน APTT · ปัจจัยเสี่ยง: malabsorption, ยาปฏิชีวนะ, warfarin, กินอาหารไม่ได้, โรคตับ',
-  next:'PT, APTT'},
+  note:'Factor II, VII, IX, X (และ protein C, S) ทำงานไม่ได้ → เป็นปัญหา secondary hemostasis · APTT และ PT ยาว (ระยะแรก PT ยาวก่อน) · ปัจจัยเสี่ยงในผู้ใหญ่: ยา, malabsorption, liver disease',
+  next:'PT, APTT',
+  ref:'Lecture 9'},
  {id:'vitc',name:'Vit C deficiency',full:'Vitamin C deficiency (scurvy)',
-  note:'สร้าง collagen บกพร่อง → หลอดเลือดเปราะ · perifollicular hemorrhage, corkscrew hair, เหงือกบวมและเลือดออก · platelet และ coagulation ปกติ · ปัจจัยเสี่ยง: ขาดผักผลไม้, ดื่มเหล้า',
-  next:'ซักประวัติอาหารเพิ่ม'},
+  note:'Vascular defect: สร้าง collagen บกพร่อง (เช่น ผนังหลอดเลือด) · เหงือกเลือดออก, perifollicular hemorrhage, subperiosteal hemorrhage · กลุ่มเสี่ยง: โรคทางระบบประสาท (เช่น cerebral palsy, พัฒนาการล่าช้า) และภาวะทุพโภชนาการรุนแรง',
+  next:'ซักประวัติอาหารเพิ่ม',
+  ref:'Lecture 9'},
  {id:'vasc',name:'Vasculitis',full:'Vasculitis (เช่น IgA vasculitis)',
-  note:'Purpura เกิดจากหลอดเลือดอักเสบ ไม่ใช่ hemostatic defect (platelet ปกติ) · IgA vasculitis: palpable purpura เด่นที่ขาและก้น ร่วมกับปวดข้อ ปวดท้อง ไตอักเสบ',
-  next:'CBC (platelet ควรปกติ), UA'},
+  note:'Vascular defect: purpura เกิดจากหลอดเลือดอักเสบ ไม่ใช่ปัญหาเกล็ดเลือด · Henoch-Schönlein purpura (IgA vasculitis): small-vessel vasculitis, palpable purpura ที่ขา ร่างกายส่วนล่าง และบริเวณที่ห้อยต่ำ ร่วมกับปวดท้อง ข้ออักเสบ hematuria',
+  next:'CBC (platelet ควรปกติ), UA',
+  ref:'Lecture 9'},
  {id:'dengue',name:'Dengue',full:'Dengue infection',
   note:'ไข้สูงเฉียบพลัน 2–7 วัน ร่วมกับ thrombocytopenia และ plasma leakage · ไม่เข้ากับอาการ 1 เดือนที่ไม่มีไข้',
-  next:'—'},
+  next:'—',
+  ref:'Lecture 9 (จัดเป็น viral infection ที่ทำให้เกล็ดเลือดต่ำ) · ระยะไข้ 2–7 วัน: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'},
  {id:'aa',name:'Aplastic anemia',full:'Aplastic anemia',
   note:'ไขกระดูกฝ่อ → pancytopenia: ซีด (anemia), ติดเชื้อหรือมีไข้ (neutropenia), เลือดออก (thrombocytopenia)',
-  next:'CBC: มี pancytopenia หรือไม่'},
+  next:'CBC: มี pancytopenia หรือไม่',
+  ref:'Lecture 9 (กลุ่ม bi-/pancytopenia) · อาการทางคลินิก: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'},
  {id:'malig',name:'Leukemia / Lymphoma',full:'Hematologic malignancy',
   note:'เซลล์มะเร็งแทนที่ไขกระดูก → cytopenias · มักมีซีด ไข้ น้ำหนักลด ต่อมน้ำเหลือง ตับ ม้ามโต',
-  next:'CBC + blood smear หา blast'},
+  next:'CBC + blood smear หา blast',
+  ref:'Lecture 9 (ITP ต้องไม่มี blast, ไม่มีต่อมน้ำเหลืองหรือตับม้ามโต) · อาการอื่น: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'},
  {id:'sle',name:'SLE',full:'Systemic lupus erythematosus',
-  note:'Autoimmune หลายระบบ · ทำให้เกิด secondary immune thrombocytopenia ได้ · อาการ: ไข้ ผมร่วง ผื่นแพ้แดด ปวดข้อ',
-  next:'ANA'},
+  note:'Autoimmune หลายระบบ · ทำให้เกล็ดเลือดต่ำได้ (secondary ITP) และใน Lecture 9 จัดอยู่ในกลุ่ม vascular defect (vasculitis) ด้วย · อาการ: ไข้ ผมร่วง ผื่นแพ้แดด ปวดข้อ',
+  next:'ANA',
+  ref:'Lecture 9 · อาการ: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'},
  {id:'drug',name:'Drug-induced',full:'Drug-induced thrombocytopenia / platelet dysfunction',
   note:'ยาบางชนิดทำให้เกล็ดเลือดต่ำ (เช่น heparin, quinine, sulfonamides) หรือทำให้เกล็ดเลือดทำงานผิดปกติ (aspirin, NSAIDs)',
-  next:'ซักประวัติยาเพิ่ม: ยาซื้อเอง สมุนไพร อาหารเสริม'},
+  next:'ซักประวัติยาเพิ่ม: ยาซื้อเอง สมุนไพร อาหารเสริม',
+  ref:'Lecture 9 (ระบุแค่ "drugs") · ตัวอย่างยา: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'},
  {id:'liver',name:'Liver disease',full:'Chronic liver disease',
-  note:'สร้าง coagulation factor ลดลง + thrombocytopenia จาก hypersplenism และ TPO ลดลง · มักมีตาเหลือง ตับม้ามโต ประวัติดื่มเหล้าหรือไวรัสตับอักเสบ',
-  next:'LFT, PT'}
+  note:'Combined defect: thrombocytopenia จาก splenic sequestration + mild platelet dysfunction + สร้าง coagulation factor ลดลง · มักมีตาเหลือง ตับม้ามโต ประวัติดื่มเหล้าหรือไวรัสตับอักเสบ',
+  next:'LFT, PT',
+  ref:'Lecture 9 · อาการ: ความรู้ทั่วไป ยังไม่ได้ตรวจกับแหล่งอ้างอิง'}
 ];
 const DXM={}; DX.forEach(d=>DXM[d.id]=d);
 
 const BASE={label:'ข้อมูลพื้นฐาน: หญิง 25 ปี',eff:{
   hemo:[-2,'เพศหญิง — hemophilia เป็น X-linked พบในเพศชายเป็นหลัก'],
-  apde:[-1,'อายุ 25 ปี — APDE ส่วนใหญ่รายงานในเด็ก']}};
+  apde:[-1,'อายุ 25 ปี — APDE รายงานส่วนใหญ่ในเด็ก (แต่พบในผู้ใหญ่ได้)']}};
 
 function skinEff(loc){
   const t='พบจุด/จ้ำเลือดที่'+loc, e={};
@@ -308,24 +323,24 @@ const F={
         aa:[1,'เลือดออกเองโดยไม่มี trauma'],malig:[1,'เลือดออกเองโดยไม่มี trauma']}},
  c_gum:{type:'card',zone:'mouth',label:'เลือดออกตามไรฟัน',placed:'เลือดออกตามไรฟัน (บางครั้งเกิดเอง)',interp:'เลือดออกที่เยื่อบุ (mucosal bleeding) → คิดถึง primary hemostasis',
    eff:{itp:[1,'Mucosal bleeding เข้าได้กับเกล็ดเลือดต่ำ'],pltdys:[1,'Mucosal bleeding เข้าได้กับ primary hemostasis defect'],vwd:[1,'Mucosal bleeding เป็นลักษณะเด่นของ VWD'],
-        vitc:[1,'เหงือกเลือดออกพบได้ใน scurvy'],aa:[1,'เลือดออกตามไรฟันพบได้'],malig:[1,'เลือดออกตามไรฟันพบได้'],dengue:[1,'เลือดออกตามไรฟันพบได้'],
+        vitc:[1,'เหงือกเลือดออกพบได้ใน scurvy'],apde:[1,'เลือดออกตามไรฟัน = mucocutaneous bleeding ซึ่งพบได้ใน APDE'],aa:[1,'เลือดออกตามไรฟันพบได้'],malig:[1,'เลือดออกตามไรฟันพบได้'],dengue:[1,'เลือดออกตามไรฟันพบได้'],
         sle:[1,'เลือดออกตามไรฟันพบได้'],drug:[1,'เลือดออกตามไรฟันพบได้'],liver:[1,'เลือดออกตามไรฟันพบได้'],
         vasc:[-1,'เลือดออกตามเยื่อบุไม่ใช่ลักษณะเด่นของ vasculitis']}},
  c_aub:{type:'card',zone:'pelvis',label:'ประจำเดือนมามากกว่าปกติ',interp:'Menorrhagia = mucosal bleeding → คิดถึง primary hemostasis',
-   eff:{itp:[1,'Menorrhagia = mucosal bleeding'],pltdys:[1,'Menorrhagia = mucosal bleeding'],vwd:[2,'Menorrhagia พบบ่อยมากในผู้หญิงที่เป็น VWD'],
+   eff:{itp:[1,'Menorrhagia = mucosal bleeding'],pltdys:[1,'Menorrhagia = mucosal bleeding'],vwd:[2,'Menorrhagia เป็น mucocutaneous bleeding เข้าได้กับ VWD'],apde:[1,'ประจำเดือนมามาก = mucocutaneous bleeding ซึ่งพบได้ใน APDE'],
         aa:[1,'เลือดออกที่เยื่อบุพบได้'],malig:[1,'เลือดออกที่เยื่อบุพบได้'],sle:[1,'เลือดออกที่เยื่อบุพบได้'],drug:[1,'เลือดออกที่เยื่อบุพบได้'],liver:[1,'เลือดออกที่เยื่อบุพบได้']}},
  n_other:{type:'card',zone:'deny',label:'เลือดออกที่อื่น (ข้อ กล้ามเนื้อ ปัสสาวะ อุจจาระ)',placed:'ไม่มีเลือดออกที่อื่น',interp:'ไม่มีเลือดออกในข้อ/กล้ามเนื้อ (deep tissue) → ไม่เข้ากับ secondary hemostasis',
    eff:{hemo:[-2,'ไม่มีเลือดออกในข้อ/กล้ามเนื้อ ซึ่งเป็นลักษณะของ hemophilia'],vitk:[-1,'ไม่มีเลือดออกแบบ deep tissue'],
         vasc:[-1,'ไม่มีถ่ายหรือปัสสาวะเป็นเลือด (GI / renal involvement)'],itp:[1,'เลือดออกจำกัดที่ผิวหนังและเยื่อบุ'],pltdys:[1,'เลือดออกจำกัดที่ผิวหนังและเยื่อบุ']}},
- n_fam:{type:'card',zone:'deny',label:'ประวัติเลือดออกผิดปกติในครอบครัว',placed:'ไม่มีประวัติครอบครัว',interp:'ไม่มีประวัติครอบครัว → โรคทางพันธุกรรมโอกาสน้อยลง (แต่ยังตัดไม่ได้ 100%)',
+ n_fam:{type:'card',zone:'deny',label:'ประวัติเลือดออกผิดปกติในครอบครัว',placed:'ไม่มีประวัติครอบครัว',interp:'ไม่มีประวัติครอบครัว → โรคทางพันธุกรรมโอกาสน้อยลง (แต่ยังตัดไม่ได้ 100% เช่น hemophilia ~30% เป็น de novo)',
    eff:{vwd:[-2,'ไม่มีประวัติเลือดออกผิดปกติในครอบครัว'],hemo:[-2,'ไม่มีประวัติเลือดออกผิดปกติในครอบครัว']}},
  n_prior:{type:'card',zone:'deny',label:'เคยมีจุด/จ้ำเลือดมาก่อน',placed:'ไม่เคยเป็นมาก่อน',interp:'เพิ่งเป็นครั้งแรก → น่าจะเป็นโรคที่เกิดภายหลัง (acquired)',
    eff:{vwd:[-2,'ไม่เคยมีอาการมาก่อน — โรคทางพันธุกรรมมักมีอาการตั้งแต่เด็ก'],hemo:[-1,'ไม่เคยมีอาการมาก่อน']}},
  n_ud:{type:'card',zone:'deny',label:'โรคประจำตัว',placed:'ไม่มีโรคประจำตัว',interp:'สุขภาพดีมาตลอด → ไม่พบสาเหตุ secondary ที่ชัดเจน',
    eff:{itp:[1,'ไม่มีโรคประจำตัว — ไม่พบสาเหตุ secondary'],pltdys:[-1,'ไม่มีโรคไต (uremia) หรือโรคตับ'],vitk:[-1,'ไม่มีโรคที่ทำให้ malabsorption หรือโรคตับ'],
-        liver:[-1,'ไม่มีประวัติโรคตับ'],sle:[-1,'ไม่มีโรคประจำตัว'],vitc:[-1,'สุขภาพดีมาตลอด']}},
+        liver:[-1,'ไม่มีประวัติโรคตับ'],sle:[-1,'ไม่มีโรคประจำตัว'],vitc:[-1,'ไม่มีโรคประจำตัว เช่น โรคทางระบบประสาท (กลุ่มเสี่ยงของ scurvy)']}},
  n_wt:{type:'card',zone:'deny',label:'น้ำหนักลด',placed:'น้ำหนักไม่ลด',interp:'น้ำหนักไม่ลด → ไม่มี constitutional symptoms',
-   eff:{malig:[-1,'น้ำหนักไม่ลด (ไม่มี B symptoms)'],vitc:[-1,'น้ำหนักไม่ลด ไม่มีหลักฐานขาดสารอาหาร']}},
+   eff:{malig:[-1,'น้ำหนักไม่ลด (ไม่มี B symptoms)'],vitc:[-2,'น้ำหนักไม่ลด ไม่มีหลักฐานทุพโภชนาการรุนแรง (กลุ่มเสี่ยงของ scurvy)']}},
  n_fever:{type:'card',zone:'deny',label:'ไข้',placed:'ไม่มีไข้',interp:'ไม่มีไข้ → ไม่เข้ากับโรคติดเชื้อหรือ systemic disease',
    eff:{dengue:[-3,'ไม่มีไข้'],malig:[-1,'ไม่มีไข้ (B symptoms หรือติดเชื้อจาก neutropenia)'],aa:[-1,'ไม่มีไข้หรือติดเชื้อ ซึ่งพบได้จาก neutropenia'],
         sle:[-1,'ไม่มีไข้'],vasc:[-1,'ไม่มีไข้หรืออาการ systemic'],itp:[1,'ไม่มีอาการ systemic — คนไข้ ITP มักสบายดียกเว้นเลือดออก']}},
@@ -334,14 +349,13 @@ const F={
         vitk:[-1,'ไม่ได้ทาน warfarin หรือยาปฏิชีวนะ'],aa:[-1,'ไม่มียาที่อาจกดไขกระดูก']}},
  n_hair:{type:'card',zone:'deny',label:'ผมร่วงมากกว่าปกติ',placed:'ไม่มีผมร่วง',interp:'ไม่มีผมร่วง → ไม่มีอาการของ SLE',eff:{sle:[-1,'ไม่มีผมร่วง']}},
  n_photo:{type:'card',zone:'deny',label:'ผื่นแพ้แดด',placed:'ไม่มีผื่นแพ้แดด',interp:'ไม่มีผื่นแพ้แดด → ไม่มีอาการของ SLE',eff:{sle:[-1,'ไม่มีผื่นแพ้แดด']}},
- n_alc:{type:'card',zone:'deny',label:'ดื่มเหล้า / สูบบุหรี่',placed:'ไม่ดื่มเหล้า ไม่สูบบุหรี่',interp:'ไม่ดื่มเหล้า → liver disease และการขาดสารอาหารโอกาสน้อย',
-   eff:{liver:[-2,'ไม่ดื่มเหล้า'],vitc:[-1,'ไม่ดื่มเหล้า (ปัจจัยเสี่ยงของการขาดสารอาหาร)']}},
+ n_alc:{type:'card',zone:'deny',label:'ดื่มเหล้า / สูบบุหรี่',placed:'ไม่ดื่มเหล้า ไม่สูบบุหรี่',interp:'ไม่ดื่มเหล้า → liver disease โอกาสน้อย',
+   eff:{liver:[-2,'ไม่ดื่มเหล้า']}},
  v_vs:{type:'vs',label:'Vital signs ปกติ',interp:'BT 37.0 °C ไม่มีไข้ · BP, PR ปกติ → ไม่มีภาวะ shock',eff:{dengue:[-1,'BT 37.0 °C']}},
  p_bleed:{type:'pe',ans:'yes',label:'Petechiae / purpura / ecchymoses',sub:'ที่ลำตัว แขน และขา',caseTx:'petechiae, purpura และ superficial ecchymoses ที่ลำตัว แขน และขา',
    interp:'Petechiae → ลักษณะของปัญหาเกล็ดเลือด (primary hemostasis)',
    eff:{itp:[1,'Petechiae เป็นลักษณะเด่นของ thrombocytopenia'],pltdys:[1,'Petechiae/purpura → primary hemostasis'],
-        vitk:[-2,'Petechiae ไม่ใช่ลักษณะของ coagulation factor deficiency'],hemo:[-1,'Petechiae ไม่ใช่ลักษณะของ coagulation factor deficiency'],
-        vwd:[-1,'Petechiae พบไม่บ่อยใน VWD เพราะ platelet count ปกติ'],vasc:[-1,'กระจายทั้งลำตัวและแขน ไม่ได้เด่นที่ขาและก้นแบบ IgA vasculitis']}},
+        vitk:[-2,'Petechiae ไม่ใช่ลักษณะของ coagulation factor deficiency'],hemo:[-1,'Petechiae ไม่ใช่ลักษณะของ coagulation factor deficiency'],vasc:[-1,'กระจายทั้งลำตัวและแขน ไม่ได้เด่นที่ขาและก้นแบบ IgA vasculitis']}},
  p_pale:{type:'pe',ans:'no',label:'Pale (ซีด)',caseTx:'not pale',interp:'ไม่ซีด → น่าจะไม่มี anemia ร่วม (อาจเป็นปัญหาเกล็ดเลือดอย่างเดียว)',
    eff:{itp:[1,'ไม่ซีด — เข้าได้กับปัญหาเกล็ดเลือดอย่างเดียว'],aa:[-2,'ไม่ซีด (aplastic anemia มักมี anemia ร่วม)'],malig:[-1,'ไม่ซีด']}},
  p_icterus:{type:'pe',ans:'no',label:'Icteric sclera (ตาเหลือง)',caseTx:'no icteric sclera',interp:'ไม่เหลือง → ไม่มีหลักฐานของ liver disease หรือ hemolysis',
@@ -602,7 +616,8 @@ function openDx(id){
   <h4>ลักษณะสำคัญ</h4><p>${d.note.split(' · ').join('<br>')}</p>
   <h4>หลักฐานจากเคสตอนนี้</h4>
   <div class="ev"><div class="col f"><h5>✓ สนับสนุน</h5>${li(e.items.filter(x=>x.w>0))}</div><div class="col a"><h5>✗ ค้าน</h5>${li(e.items.filter(x=>x.w<0))}</div></div>
-  <h4>ถ้าจะยืนยันหรือตัดออก</h4><p>${d.next}</p>`);
+  <h4>ถ้าจะยืนยันหรือตัดออก</h4><p>${d.next}</p>
+  <p class="note" style="margin-top:12px">อ้างอิง: ${d.ref}</p>`);
 }
 function openSummary(){
   const {ev,st}=compute(placed);const done=placed.length===TOTAL;
@@ -623,15 +638,31 @@ function openSummary(){
      ${pend.length?'<p><b>รอข้อมูล:</b> '+pend.map(d=>d.name).join(', ')+'</p>':''}
      <p><b>Rule out / โอกาสน้อย:</b> ${outs.map(d=>d.name).join(', ')||'—'}</p></div>
    <div class="sum-box"><h4>ส่งตรวจอะไรต่อ</h4><ol style="margin:0;padding-left:22px">
-     <li><b>CBC + platelet count + blood smear</b> — ยืนยัน thrombocytopenia, ดูว่าเป็น isolated หรือไม่, ขนาดเกล็ดเลือด, eosinophil, blast, schistocyte, platelet clumping</li>
+     <li><b>CBC + platelet count + blood smear</b> — ตาม approach to thrombocytopenia: แยก pseudothrombocytopenia (platelet clumping), isolated vs MAHA (schistocyte) vs bi-/pancytopenia, ขนาดเกล็ดเลือด, eosinophil, blast</li>
      <li><b>PT, APTT</b> — screen secondary hemostasis</li>
-     <li>ถ้าเป็น isolated thrombocytopenia → หาสาเหตุ secondary ของ ITP เช่น <b>HIV, HCV, HBsAg, ANA</b></li>
-     <li><b>Stool exam</b> หาพยาธิ — ถ้ายังคิดถึง APDE</li>
+     <li>ถ้าเป็น isolated thrombocytopenia → หาสาเหตุ secondary ของ ITP: <b>anti-HIV, HBsAg, anti-HCV</b> (± ANA)</li>
+     <li><b>Stool exam</b> หาพยาธิ — ถ้ายังคิดถึง APDE (eosinophilia, platelet count ปกติ)</li>
      <li>ถ้า platelet count ปกติ → platelet function test, VWF studies</li></ol></div>
   </div>
-  <h4>ควรซักประวัติเพิ่ม</h4><p>ยาซื้อเอง สมุนไพร NSAIDs · ประวัติอาหาร · การติดเชื้อหรือวัคซีนก่อนมีอาการ · ประวัติประจำเดือนและโอกาสตั้งครรภ์</p>`);
+  <h4>ควรซักประวัติเพิ่ม</h4><p>ยาซื้อเอง สมุนไพร NSAIDs · ปวดข้อ ปวดกระดูก ผื่น · ประวัติอาหาร · การติดเชื้อหรือวัคซีนก่อนมีอาการ · ประวัติประจำเดือนและโอกาสตั้งครรภ์</p>
+  <p class="note">อ้างอิงหลัก: Lecture 9 Hemostasis disorders และ Lecture 8 Normal hemostasis · ดูรายการทั้งหมดที่ปุ่ม “อ้างอิง”</p>`);
 }
 
+function openRefs(){openModal(`<h2>แหล่งอ้างอิง</h2>
+  <h4>เอกสารประกอบการเรียนบล็อก Hematology (คณะแพทยศาสตร์ ม.อ.)</h4><ul>
+   <li>Songthawee N. <i>Hemostasis disorders</i> (Lecture 9). Division of Hematology/Oncology, Department of Pediatrics, Faculty of Medicine, Prince of Songkla University; 2025.</li>
+   <li>Songthawee N. <i>Normal hemostasis &amp; its disorders</i> (Lecture 8). Division of Hematology and Oncology, Department of Pediatrics, Faculty of Medicine, Prince of Songkla University; 2025.</li></ul>
+  <h4>ITP</h4><ul>
+   <li>Rodeghiero F, et al. Standardization of terminology, definitions and outcome criteria in immune thrombocytopenic purpura of adults and children: report from an international working group. <i>Blood</i>. 2009;113(11):2386–2393. doi:10.1182/blood-2008-07-162503</li>
+   <li>Provan D, et al. Updated international consensus report on the investigation and management of primary immune thrombocytopenia. <i>Blood Adv</i>. 2019;3(22):3780–3817. doi:10.1182/bloodadvances.2019000812</li>
+   <li>Neunert C, et al. American Society of Hematology 2019 guidelines for immune thrombocytopenia. <i>Blood Adv</i>. 2019;3(23):3829–3866. doi:10.1182/bloodadvances.2019000966</li></ul>
+  <h4>APDE</h4><ul>
+   <li>Suvatte V, Mahasandana C, Tanphaichitr V, Tuchinda S. Acquired platelet dysfunction with eosinophilia: study of platelet function in 62 cases. <i>Southeast Asian J Trop Med Public Health</i>. 1979;10(3):358–367.</li>
+   <li>Chotsampancharoen T, Sripornsawan P, Duangchu S, McNeil E. Clinical course and outcome of childhood acquired platelet dysfunction with eosinophilia. <i>Acta Haematol</i>. 2018;139(1):28–32.</li></ul>
+  <h4>หมายเหตุ</h4>
+  <p class="note" style="font-size:16px">• น้ำหนักคะแนนที่ระบบใช้ rule in / rule out เป็นเครื่องมือช่วยสอนที่ผู้จัดทำกำหนดเอง ไม่ได้มาจาก guideline ใด<br>
+  • เนื้อหาที่ไม่มีใน lecture ได้แก่ ระยะไข้ของ dengue, อาการของ SLE, อาการทางคลินิกของ leukemia/lymphoma และ aplastic anemia, ตัวอย่างยา และ fundoscopy เป็นความรู้ทั่วไประดับตำรา ยังไม่ได้ตรวจกับแหล่งอ้างอิง</p>`);}
+$('#bRef').onclick=openRefs;
 $('#bUndo').onclick=undo;$('#bNext').onclick=next;$('#bReset').onclick=reset;$('#bSum').onclick=openSummary;
 drawFig();drawZones();buildPE();reset();
 window.__t={F,ORDER,compute,placed:()=>placed,next,commit};
